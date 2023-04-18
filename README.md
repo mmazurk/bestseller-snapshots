@@ -41,11 +41,18 @@ https://app.quickdatabasediagrams.com/#/
     publisher text
     user_id int FK >- users.user_id
 
-    lists
+    nyt_lists
     --
     list_id int PK
     list_name text
     oldest_published_date date
     newest_published_date date
+    user_id int FK >- users.user_id
+    book_id int FK >- books.book_id
+
+    user_lists
+    --
+    list_id int PK
+    list_name text
     user_id int FK >- users.user_id
     book_id int FK >- books.book_id
