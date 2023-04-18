@@ -3,7 +3,7 @@
 
 <br>
 
-Bestseller Snapshots allows a user to find new books to read based on bestseller lists and book reviews from the past – going all the way back to the 1930s. Once the user has a list, they can explore more information about the books and create reading lists.
+Bestseller Snapshots allows a user to find new books to read based on bestseller lists and book reviews from the past. Once the user has a list, they can explore more information about the books and create their own customized reading lists.
 
 <br>
 
