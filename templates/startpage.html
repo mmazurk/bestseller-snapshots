@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Login or Register{% endblock %}
+
+{% block navbar %}
+<a class="nav-link" href="#">Login</a>
+<a class="nav-link" href="#">Sign Up</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="container pt-5">
+    <div class="row">
+      <h1 class="display-2">New York Times Bestseller Snapshots</h1>
+    </div>
+    <div class="row justify-content-between">
+      <div class="col-8">
+        <img
+          src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+          alt="" class="img-fluid rounded-2">
+      </div>
+      <div class="col-4 d-flex align-items-center ps-5">
+        <div class="card p-5">
+          <div class="card-body b">
+            <h3 class="card-title">Sign Up</h5>
+              <p class="card-text">Click Here to sign up!</p>
+              <a href="/register" class="btn btn-primary">Register for Account</a>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">Login</h5>
+              <p class="card-text">Click here if you already have an account.</p>
+              <a href="#" class="btn btn-primary">Login to Account</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
