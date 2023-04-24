@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block title %} Registration {% endblock %}
+
+{% block body_class %}bg-image{% endblock %}
+
+{% block navbar %}
+<a class="nav-link" href="/">Return Home</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <form action="/login" method="POST">
+
+    <div class="row d-flex justify-content-end align-content-center" style="height: 80vh">
+      <div class="col-4 me-5">
+        <h2 class="text-center">Login</h2>
+
+
+        {{ form.hidden_tag() }} {% for field in form if
+        field.widget.input_type != 'hidden' %}
+        <p>
+          {{ field.label }} {{ field(class_="form-control") }} {% for error in
+          field.errors %}
+          <span class="form-text text-danger">{{ error }}</span>
+          {% endfor %}
+        </p>
+        {% endfor %}
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-dark" type="submit">Log In</button>
+        </div>
+
+      </div>
+    </div>
+  </form>
+
+</div>
+
+
+{% endblock %}

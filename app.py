@@ -1,7 +1,7 @@
 from flask import Flask, session, redirect, render_template, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
-from forms import RegisterForm
+from forms import RegisterForm, LoginForm
 
 app = Flask(__name__)
 app.app_context().push()
@@ -21,7 +21,6 @@ debug = DebugToolbarExtension(app)
 connect_db(app)
 db.create_all()
 
-
 @app.route("/")
 def start_page():
     """redirect a user to the register page"""
@@ -36,7 +35,39 @@ def register_user():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        return "good job!"
+        email = form.email.data
+        username = form.username.data
+        password = User.register(username, form.password.data).password
+        if(form.image_url.data): 
+            image_url = form.image_url.data
+        else:
+            image_url = "https://images.unsplash.com/photo-1457140072488-87e5ffde2d77?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+        if(form.bio.data):
+            bio = form.bio.data
+        else:
+            bio = "Bio goes here."
+        user = User(email = email, username = username, password = password, image_url = image_url, bio = bio)
+        db.session.add(user)
+        db.session.commit()
+        return redirect("/")
 
     else:
         return render_template('register.html', form=form)
+
+@app.route("/login", methods=['GET', 'POST'])
+def login_user():
+    """login existing user"""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if(User.authenticate(username, password)):
+            return render_template("secret.html")
+        else:
+            flash("Incorrect username or password")
+            return render_template("login.html", form = form)
+    
+    else:
+        return render_template("login.html", form = form)
