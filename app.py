@@ -10,7 +10,6 @@ app.app_context().push()
 ## Need to figure out how to configure app.app_context() correctly 
 ## So we don't have problems on Heroku
 
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///bestseller'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
@@ -64,10 +63,22 @@ def login_user():
         username = form.username.data
         password = form.password.data
         if(User.authenticate(username, password)):
-            return render_template("secret.html")
+            return render_template("user-landing.html")
         else:
             flash("Incorrect username or password")
             return render_template("login.html", form = form)
     
     else:
         return render_template("login.html", form = form)
+
+@app.route("/list-search")
+def search_lists():
+    """search through book lists"""
+
+    return render_template("list-search.html")
+
+@app.route("/book-results")
+def show_list():
+    """search through book lists"""
+
+    return render_template("book-results.html")
