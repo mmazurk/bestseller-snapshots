@@ -2,6 +2,12 @@ from flask import Flask, session, redirect, render_template, flash
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User
 from forms import RegisterForm, LoginForm
+from api_secret import API_KEY
+from booklist import List
+import requests, pdb, json
+
+key = API_KEY
+API_BASE_URL = "https://api.nytimes.com/svc/books/v3/"
 
 app = Flask(__name__)
 app.app_context().push()
@@ -75,7 +81,10 @@ def login_user():
 def search_lists():
     """search through book lists"""
 
-    return render_template("list-search.html")
+    #TODO: Finish writing booklist.py and then pass the results to the page
+    booklist = List()
+
+    return render_template("list-search.html", booklist=booklist)
 
 @app.route("/book-results")
 def show_list():
