@@ -86,8 +86,10 @@ def search_lists():
 
     return render_template("list-search.html", booklist=booklist)
 
-@app.route("/book-results")
-def show_list():
+@app.route("/book-results/<list_name_encoded>")
+def show_list(list_name_encoded):
     """search through book lists"""
+
+    ##TODO add the logic for showing the book lists
 
     return render_template("book-results.html")

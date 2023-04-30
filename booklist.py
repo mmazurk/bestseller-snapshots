@@ -19,18 +19,40 @@ fiction_list = [
 ]
 
 nonfiction_list = [
+'Combined Print and E-Book Nonfiction',
+'Hardcover Nonfiction',
+'Paperback Nonfiction',
+'E-Book Nonfiction',
+'Combined Print Nonfiction',
+'Audio Nonfiction'
 ]
 
 exciting_list = [
+'Crime and Punishment',
+'Espionage',
+'Expeditions Disasters and Adventures',
+'Travel'
 ]
 
 business_list = [
+'Business Books',
+'Hardcover Business Books',
+'Paperback Business Books'
 ]
 
 graphic_list = [
+'Hardcover Graphic Books',
+'Paperback Graphic Books',
+'Manga',
+'Picture Books',
+'Graphic Books and Manga'
 ]
 
 childrens_list = [
+'Childrens Middle Grade',
+'Childrens Middle Grade E-Book',
+'Childrens Middle Grade Hardcover',
+'Childrens Middle Grade Paperback'
 ]
 
 # use this to make the "other" list
@@ -43,6 +65,12 @@ class List():
 
 		self.data = self.get_data()
 		self.fiction = self.make_list(fiction_list)
+		self.nonfiction = self.make_list(nonfiction_list)
+		self.exciting = self.make_list(exciting_list)
+		self.business = self.make_list(business_list)
+		self.graphic = self.make_list(graphic_list)
+		self.childrens = self.make_list(childrens_list)
+		self.other = self.make_list(non_categorized)
 
 	def get_data(self):
 

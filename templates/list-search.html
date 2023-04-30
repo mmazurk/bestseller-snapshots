@@ -27,91 +27,32 @@
 
     <div class="row">
       <div class="col">
-        <h2 class="display-3">Popular</h2>
+        <h2 class="display-3">Fiction</h2>
         <div class="d-flex flex-row flex-wrap">
 
-
+          {% for item in booklist.fiction %}
           <div class="card m-2" style="width: 18rem;">
             <div class="card-body">
-              <h5 class="card-title">Combined Print & E-Book Fiction </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated Weekly</h6>
-              <p class="mb-lg-0 small">Between 01/01/01 and 01/01/01</p>
+              <h5 class="card-title">{{ item.display_name }} </h5>
+              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
+              <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
               <div>
-                <input type="date" id="start" name="trip-start" value="2018-07-22" min="2001-01-01" max="2022-12-31">
+                <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}" min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
               </div>
-              <a href="/book-results" class="btn btn-sm btn-primary mt-2">Go to List!</a>
+              <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
             </div>
           </div>
+          {% endfor %}
 
 
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">Combined Print & E-Book Fiction </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated Weekly</h6>
-              <p class="mb-lg-0">Enter Date after 01/01/01</p>
-              <div>
-                <input type="date" id="start" name="trip-start" value="2018-07-22" min="2001-01-01" max="2022-12-31">
-              </div>
-              <a href="#" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-
-
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">Combined Print & E-Book Fiction </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated Weekly</h6>
-              <p class="mb-lg-0">Enter Date after 01/01/01</p>
-              <div>
-                <input type="date" id="start" name="trip-start" value="2018-07-22" min="2001-01-01" max="2022-12-31">
-              </div>
-              <a href="#" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-
-
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">Combined Print & E-Book Fiction </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated Weekly</h6>
-              <p class="mb-lg-0">Enter Date after 01/01/01</p>
-              <div>
-                <input type="date" id="start" name="trip-start" value="2018-07-22" min="2001-01-01" max="2022-12-31">
-              </div>
-              <a href="#" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-
-
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">Combined Print & E-Book Fiction </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated Weekly</h6>
-              <p class="mb-lg-0">Enter Date after 01/01/01</p>
-              <div>
-                <input type="date" id="start" name="trip-start" value="2018-07-22" min="2001-01-01" max="2022-12-31">
-              </div>
-              <a href="#" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-
-
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">Combined Print & E-Book Fiction </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated Weekly</h6>
-              <p class="mb-lg-0">Enter Date after 01/01/01</p>
-              <div>
-                <input type="date" id="start" name="trip-start" value="2018-07-22" min="2001-01-01" max="2022-12-31">
-              </div>
-              <a href="#" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
         </div>
       </div>
     </div>
 
     <br>
+    <hr>
+    <hr>
+    <hr>
     <hr>
 
     <div class="row mt-3">
