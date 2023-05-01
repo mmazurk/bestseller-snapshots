@@ -56,8 +56,8 @@ childrens_list = [
 ]
 
 # use this to make the "other" list
-all_categorized = [*nonfiction_list, *exciting_list, *business_list, *graphic_list, *childrens_list]
-non_categorized = [item for item in list if item['list_name'] not in all_categorized]
+all_categorized = [*fiction_list, *nonfiction_list, *exciting_list, *business_list, *graphic_list, *childrens_list]
+
 
 class List():
 
@@ -70,6 +70,8 @@ class List():
 		self.business = self.make_list(business_list)
 		self.graphic = self.make_list(graphic_list)
 		self.childrens = self.make_list(childrens_list)
+
+		non_categorized = [item['list_name'] for item in self.data if item['list_name'] not in all_categorized]
 		self.other = self.make_list(non_categorized)
 
 	def get_data(self):

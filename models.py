@@ -49,53 +49,41 @@ class User(db.Model):
         u = self
         return f"<User id={u.user_id}, username={u.username}"
 
+class NYTList(db.Model):
 
-class Note(db.Model):
-
-    __tablename__ = "notes"
-
-    note_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    text = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-
-
-class NYT_List(db.Model):
-
-    __tablename__ = "nyt_lists"
+    __tablename__ = "lists"
 
     # in the API this is also called list_id
     list_id = db.Column(db.Integer, primary_key=True)
-    list_name = db.Column(db.String(30), nullable=False)
+    list_name = db.Column(db.String(30), nullable = False)
+    list_name_encoded = db.Column(db.String(30), nullable=False)
     oldest_published_date = db.Column(db.Date)
     newest_published_date = db.Column(db.Date)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'))
-
 
 class Book(db.Model):
 
     __tablename__ = "books"
 
     book_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    isbn_10 = db.Column(db.String(10))
-    isbn_13 = db.Column(db.String(13))
+    isbns_combined = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(30), nullable=False)
+    description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(200))
-    review_url = db.Column(db.String(200))
-    amazon_url = db.Column(db.String(200))
-    description = db.Column(db.Text)
-    publisher = db.Column(db.String(30), nullable=False)
+
+class UserBooks(db.Model):
+
+    __tablename__ = "user_books"
+
+    note_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    text = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'))
 
-
-class User_List(db.Model):
+class UserLists(db.Model):
 
     __tablename__ = "user_lists"
 
-    list_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    list_name = db.Column(db.String(30), nullable=False)
-    list_description = db.Column(db.Text)
+    user_lists_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('lists.list_id'))

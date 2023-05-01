@@ -24,6 +24,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+db.drop_all()
 db.create_all()
 
 @app.route("/")
@@ -68,8 +69,11 @@ def login_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if(User.authenticate(username, password)):
-            return render_template("user-landing.html")
+        user = User.authenticate(username, password)
+        if(user):
+            session['user_id'] = user.user_id
+            session['username'] = username
+            return redirect(f"/user-landing/{username}")
         else:
             flash("Incorrect username or password")
             return render_template("login.html", form = form)
@@ -77,11 +81,17 @@ def login_user():
     else:
         return render_template("login.html", form = form)
 
+
+@app.route("/user-landing/<username>")
+def show_user_page(username):
+    """Users home page"""
+
+    return render_template("user-landing.html", username = username)
+
 @app.route("/list-search")
 def search_lists():
     """search through book lists"""
 
-    #TODO: Finish writing booklist.py and then pass the results to the page
     booklist = List()
 
     return render_template("list-search.html", booklist=booklist)
@@ -90,6 +100,30 @@ def search_lists():
 def show_list(list_name_encoded):
     """search through book lists"""
 
-    ##TODO add the logic for showing the book lists
+    res = requests.get(f"{API_BASE_URL}lists/current/{list_name_encoded}.json", params={'api-key': key})
+    data = res.json()
+    display_name = data['results']['display_name']
+    published_date = data['results']['published_date']
+    books = data['results']['books']
 
-    return render_template("book-results.html")
+    # books = data[results][books]
+        # [book_image]
+        # [title]
+        # [author]
+        # [description]
+    
+    # I will concat [primary_isbn10] and [primary_isbn13] for a unique identifier
+
+    return render_template("book-results.html", display_name = display_name, published_date = published_date, books = books)
+
+@app.route("/list-search/add/<list_name_encoded>")
+def add_list(list_name_encoded):
+    """Saves list to user profile"""
+
+    # TODO
+    # Get the current user from the session
+    # Check and see if this list is already favorited
+    # If not, add the list to the user's lists
+    # Then return to the page along with the lists they have favorited to change the buttons
+
+
