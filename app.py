@@ -1,20 +1,22 @@
-from flask import Flask, session, redirect, render_template, flash
+from flask import Flask, session, redirect, render_template, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, NYTList, Book, UserBooks, UserLists
 from forms import RegisterForm, LoginForm
 from api_secret import API_KEY
 from booklist import List
-import requests, pdb, json
+import requests
+import pdb
+import json
 
 key = API_KEY
 API_BASE_URL = "https://api.nytimes.com/svc/books/v3/"
 
 app = Flask(__name__)
-app.app_context().push()
+# app.app_context().push()
 
-## TODO 
-## Need to figure out how to configure app.app_context() correctly 
-## So we don't have problems on Heroku
+# TODO
+# Need to figure out how to configure app.app_context() correctly
+# So we don't have problems on Heroku
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///bestseller'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,9 +25,14 @@ app.config['SECRET_KEY'] = "whoaasecret"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
-connect_db(app)
-db.drop_all()
-db.create_all()
+with app.app_context():
+    connect_db(app)
+    # db.drop_all()
+    db.create_all()
+
+# object to store API call so we don't make it multiple times
+booklist = List()
+
 
 @app.route("/")
 def start_page():
@@ -44,21 +51,23 @@ def register_user():
         email = form.email.data
         username = form.username.data
         password = User.register(username, form.password.data).password
-        if(form.image_url.data): 
+        if (form.image_url.data):
             image_url = form.image_url.data
         else:
             image_url = "https://images.unsplash.com/photo-1457140072488-87e5ffde2d77?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-        if(form.bio.data):
+        if (form.bio.data):
             bio = form.bio.data
         else:
             bio = "Bio goes here."
-        user = User(email = email, username = username, password = password, image_url = image_url, bio = bio)
+        user = User(email=email, username=username,
+                    password=password, image_url=image_url, bio=bio)
         db.session.add(user)
         db.session.commit()
         return redirect("/")
 
     else:
         return render_template('register.html', form=form)
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login_user():
@@ -70,60 +79,118 @@ def login_user():
         username = form.username.data
         password = form.password.data
         user = User.authenticate(username, password)
-        if(user):
+        if (user):
             session['user_id'] = user.user_id
             session['username'] = username
             return redirect(f"/user-landing/{username}")
         else:
             flash("Incorrect username or password")
-            return render_template("login.html", form = form)
-    
+            return render_template("login.html", form=form)
+
     else:
-        return render_template("login.html", form = form)
+        return render_template("login.html", form=form)
 
 
 @app.route("/user-landing/<username>")
 def show_user_page(username):
     """Users home page"""
 
-    return render_template("user-landing.html", username = username)
+    return render_template("user-landing.html", username=username)
+
 
 @app.route("/list-search")
 def search_lists():
     """search through book lists"""
 
-    booklist = List()
+    user_id = session.get('user_id')
 
-    return render_template("list-search.html", booklist=booklist)
+    # find out which lists the user has favorited
+    # -------------------------
+    # select u.user_id, l.list_name_encoded
+    # from user_lists u
+    # left join lists l
+    # on u.list_id = l.list_id
+    # where user_id = 1; 
+
+    result = db.session.query(NYTList.list_name_encoded).join(UserLists, NYTList.list_id == UserLists.list_id, isouter=True).filter(UserLists.user_id == user_id).all()
+    
+    if (result):
+        list_of_favorites = [item[0] for item in result]
+    else: list_of_favorites = []
+
+    # booklist is from an object I created at the top
+    return render_template("list-search.html", booklist=booklist, list_of_favorites = list_of_favorites)
+
 
 @app.route("/book-results/<list_name_encoded>")
 def show_list(list_name_encoded):
     """search through book lists"""
 
-    res = requests.get(f"{API_BASE_URL}lists/current/{list_name_encoded}.json", params={'api-key': key})
+    res = requests.get(
+        f"{API_BASE_URL}lists/current/{list_name_encoded}.json", params={'api-key': key})
     data = res.json()
     display_name = data['results']['display_name']
+    list_name_encoded = data['results']['list_name_encoded']
     published_date = data['results']['published_date']
     books = data['results']['books']
 
-    # books = data[results][books]
-        # [book_image]
-        # [title]
-        # [author]
-        # [description]
-    
-    # I will concat [primary_isbn10] and [primary_isbn13] for a unique identifier
+    return render_template("book-results.html", display_name=display_name, list_name_encoded = list_name_encoded, published_date=published_date, books=books)
 
-    return render_template("book-results.html", display_name = display_name, published_date = published_date, books = books)
 
 @app.route("/list-search/add/<list_name_encoded>")
 def add_list(list_name_encoded):
     """Saves list to user profile"""
 
-    # TODO
-    # Get the current user from the session
-    # Check and see if this list is already favorited
-    # If not, add the list to the user's lists
-    # Then return to the page along with the lists they have favorited to change the buttons
+    username = session.get('username')
+    list_object = next((obj for obj in booklist.data if obj['list_name_encoded'] == list_name_encoded), None)
 
+    # Check and see if this list is already favorited
+    current_list = NYTList.query.filter(NYTList.list_name_encoded == list_name_encoded).first()
+    user = User.query.filter(User.username == username).first()
+
+    if not(current_list):
+        new_list = NYTList(list_name = list_object['list_name'], list_name_encoded = list_object['list_name_encoded'], oldest_published_date = list_object['oldest_published_date'], newest_published_date = list_object['newest_published_date'])
+        db.session.add(new_list)
+        db.session.commit()
+
+    user_id = session.get('user_id')
+    list_id = NYTList.query.filter(NYTList.list_name_encoded == list_name_encoded).first().list_id
+    entry = UserLists(user_id = user_id, list_id = list_id)
+    db.session.add(entry)
+    db.session.commit()
+    return redirect(f"/list-search")
+
+
+@app.route("/book-results/add")
+def add_book():
+    """Saves book to user profile"""
+
+    list_name_encoded = request.args.get('list_name_encoded')
+    isbns_combined = request.args.get('isbns_combined')
+    book_title = request.args.get('title')
+    author = request.args.get('author')
+    description = request.args.get('description')
+    image_url = request.args.get('image_url')
+
+    if not(list_name_encoded and book_title):
+        return render_template("secret.html")
+
+    # Is this book in the database; if not, add
+    book = Book.query.filter(Book.isbns_combined == isbns_combined).first()
+    if not(book):
+        new_book = Book(isbns_combined = isbns_combined, title = book_title, author = author, description = description, image_url = image_url)
+        db.session.add(new_book)
+        db.session.commit()
+
+    user_id = session.get('user_id')
+    book_id = Book.query.filter(Book.isbns_combined == isbns_combined).first().book_id
+    entry = UserBooks(user_id = user_id, book_id = book_id)
+    db.session.add(entry)
+    db.session.commit()
+    return redirect(f"/book-results/{list_name_encoded}")
+
+
+# ZaK: In production you typically wouldn't make a ton of API calls; 
+# You would use a cache server for the API data; a service like redis 
+# It will call the API when you are beyond the limit
 

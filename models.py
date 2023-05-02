@@ -54,9 +54,9 @@ class NYTList(db.Model):
     __tablename__ = "lists"
 
     # in the API this is also called list_id
-    list_id = db.Column(db.Integer, primary_key=True)
-    list_name = db.Column(db.String(30), nullable = False)
-    list_name_encoded = db.Column(db.String(30), nullable=False)
+    list_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    list_name = db.Column(db.String(200), nullable = False)
+    list_name_encoded = db.Column(db.String(200), nullable=False)
     oldest_published_date = db.Column(db.Date)
     newest_published_date = db.Column(db.Date)
 
@@ -86,4 +86,4 @@ class UserLists(db.Model):
 
     user_lists_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    book_id = db.Column(db.Integer, db.ForeignKey('lists.list_id'))
+    list_id = db.Column(db.Integer, db.ForeignKey('lists.list_id'))

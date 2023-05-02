@@ -16,8 +16,7 @@
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
         <h1 class="display-2">List Search</h1>
-        <p class="lead text-muted">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero quibusdam rem,
-          incidunt fuga odit ad modi, nihil!</p>
+        <p class="lead text-muted">Use this page to view or save different lists!</p>
       </div>
     </div>
   </section>
@@ -25,12 +24,14 @@
 
   <div class="container">
 
+    {% for category in ['fiction', 'nonfiction', 'exciting', 'business', 'graphic', 'childrens', 'other'] %}
+
     <div class="row">
       <div class="col">
-        <h2 class="display-3">Fiction</h2>
+        <h2 class="display-3">{{category|capitalize}}</h2>
         <div class="d-flex flex-row flex-wrap">
           
-          {% for item in booklist.fiction %}
+          {% for item in booklist[category] %}
           <div class="card m-2" style="width: 18rem;">
             <div class="card-body">
               <h5 class="card-title">{{ item.display_name }} </h5>
@@ -39,13 +40,18 @@
                   <div>
                     <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
                       min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
+                  </div>        
                   <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-                  <a href="/list-search/add/{{item.list_name_encoded}}" class="btn btn-sm btn-success mt-2">Save List!</a>
+                  {% if item.list_name_encoded in list_of_favorites %}
+                  <a href="/list-search/remove/{{item.list_name_encoded}}" class="btn btn-sm btn-danger mt-2">Remove List</a>
+                  {% else %}
+                  <a href="/list-search/add/{{item.list_name_encoded}}" class="btn btn-sm btn-success mt-2">Save List</a>
+                  {% endif %}
+
             </div>
           </div>
           {% endfor %}
-
+          
         </div>
       </div>
     </div>
@@ -53,8 +59,11 @@
     <br>
     <hr>
 
+    
+    {% endfor %}
 
-    <div class="row">
+
+    <!-- <div class="row">
       <div class="col">
         <h2 class="display-3">Non-Fiction</h2>
         <div class="d-flex flex-row flex-wrap">
@@ -217,11 +226,9 @@
     </div>
 
     <br>
-    <hr>
+    <hr> -->
 
   </div>
-
-
 
 
 {% endblock %}
