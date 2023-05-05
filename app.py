@@ -95,7 +95,41 @@ def login_user():
 def show_user_page(username):
     """Users home page"""
 
-    return render_template("user-landing.html", username=username)
+    user_id = session.get('user_id')
+
+    # find out which lists the user has favorited
+    # -------------------------
+    # select u.user_id, l.list_name_encoded
+    # from user_lists u
+    # left join lists l
+    # on u.list_id = l.list_id
+    # where user_id = 1; 
+
+    list_result = db.session.query(NYTList.list_name_encoded).join(UserLists, NYTList.list_id == UserLists.list_id, isouter=True).filter(UserLists.user_id == user_id).all()
+    
+    if (list_result):
+        favorited_lists = [item[0] for item in list_result]
+    else: 
+        favorited_lists = []
+
+    # find out which books the user has favorited
+    # -------------------------
+    # select ub.user_id, ub.book_id, b.title, b.author, b.description, b.image_url
+    # from user_books ub
+    # left join books b
+    # on b.book_id = ub.book_id
+    # where user_id = 1;
+
+    book_result = db.session.query(Book.title, Book.author, Book.description, Book.image_url, Book.book_id).join(UserBooks, Book.book_id == UserBooks.book_id, isouter = True).filter(UserBooks.user_id == user_id).all()
+
+    if(book_result):
+        favorited_books = book_result
+    else: 
+        favorited_books = []
+
+    user = User.query.get(user_id)
+
+    return render_template("user-landing.html", user = user, username = username, favorited_lists = favorited_lists, favorited_books = favorited_books)
 
 
 @app.route("/list-search")
@@ -122,12 +156,15 @@ def search_lists():
     return render_template("list-search.html", booklist=booklist, list_of_favorites = list_of_favorites)
 
 
-@app.route("/book-results/<list_name_encoded>")
-def show_list(list_name_encoded):
+@app.route("/book-results")
+def show_list():
     """search through book lists"""
 
+    list_name_encoded = request.args.get('list_name_encoded')
+    date = request.args.get('date')
+
     res = requests.get(
-        f"{API_BASE_URL}lists/current/{list_name_encoded}.json", params={'api-key': key})
+        f"{API_BASE_URL}lists/{date}/{list_name_encoded}.json", params={'api-key': key})
     data = res.json()
     display_name = data['results']['display_name']
     list_name_encoded = data['results']['list_name_encoded']
@@ -189,7 +226,37 @@ def add_book():
     db.session.commit()
     return redirect(f"/book-results/{list_name_encoded}")
 
+@app.route("/list-search/remove")
+def remove_list():
+    """removes a list from the user"""
 
+    username = session.get('username')
+    user_id = session.get('user_id')
+    list_name_encoded = request.args.get('list_name_encoded')
+    
+    if(list_name_encoded):
+        list_id = NYTList.query.filter(NYTList.list_name_encoded == list_name_encoded).first().list_id
+        UserLists.query.filter(UserLists.user_id == user_id).filter(UserLists.list_id == list_id).delete()
+        db.session.commit()
+        return redirect(f"/user-landing/{username}")
+    else:
+        return render_template("secret.html")
+    
+@app.route("/book-search/remove")
+def remove_book():
+    """ removes a book from the user"""
+
+    username = session.get('username')
+    user_id = session.get('user_id')
+    book_id = request.args.get('book_id')
+
+    if(book_id):
+        UserBooks.query.filter(UserBooks.user_id == user_id).filter(UserBooks.book_id == book_id).delete()
+        db.session.commit()
+        return redirect(f"/user-landing/{username}")
+    else:
+        return render_template("secret.html")
+    
 # ZaK: In production you typically wouldn't make a ton of API calls; 
 # You would use a cache server for the API data; a service like redis 
 # It will call the API when you are beyond the limit

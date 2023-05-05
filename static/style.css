@@ -21,3 +21,10 @@
   background-size: cover;
   background-repeat: no-repeat;
 }
+
+.user-image {
+  max-height: 200px; /* Adjust this value according to your needs */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}

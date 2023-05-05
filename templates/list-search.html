@@ -13,222 +13,63 @@
 
 
 <section class="py-2 text-center container">
-    <div class="row py-lg-5">
-      <div class="col-lg-6 col-md-8 mx-auto">
-        <h1 class="display-2">List Search</h1>
-        <p class="lead text-muted">Use this page to view or save different lists!</p>
-      </div>
+  <div class="row py-lg-5">
+    <div class="col-lg-6 col-md-8 mx-auto">
+      <h1 class="display-2">List Search</h1>
+      <p class="lead text-muted">Use this page to view or save different lists!</p>
     </div>
-  </section>
+  </div>
+</section>
+
+<div id="container-div" class="container">
+
+  {% for category in ['fiction', 'nonfiction', 'exciting', 'business', 'graphic', 'childrens', 'other'] %}
 
 
-  <div class="container">
+  <div class="row">
+    <div class="col">
+      <h2 class="display-3">{{category|capitalize}}</h2>
+      <div class="d-flex flex-row flex-wrap">
 
-    {% for category in ['fiction', 'nonfiction', 'exciting', 'business', 'graphic', 'childrens', 'other'] %}
-
-    <div class="row">
-      <div class="col">
-        <h2 class="display-3">{{category|capitalize}}</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist[category] %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>        
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-                  {% if item.list_name_encoded in list_of_favorites %}
-                  <a href="/list-search/remove/{{item.list_name_encoded}}" class="btn btn-sm btn-danger mt-2">Remove List</a>
-                  {% else %}
-                  <a href="/list-search/add/{{item.list_name_encoded}}" class="btn btn-sm btn-success mt-2">Save List</a>
-                  {% endif %}
-
+        {% for item in booklist[category] %}
+        <div class="card m-2" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">{{ item.display_name }} </h5>
+            <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
+            <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
+            <div>
+              <input type="date" id="{{item.list_name_encoded}}_date" name="{{item.list_name_encoded}}_date"
+                value="{{item.newest_published_date}}" min="{{item.oldest_published_date}}"
+                max="{{item.newest_published_date}}">
             </div>
+            <a href="/book-results?list_name_encoded={{item.list_name_encoded}}" id="{{item.list_name_encoded}}"
+                class=" btn btn-sm btn-primary mt-2">Go to List!</a>
+            {% if item.list_name_encoded in list_of_favorites %}
+            <a href="/list-search/remove/{{item.list_name_encoded}}" class="btn btn-sm btn-danger mt-2">Remove
+              List</a>
+            {% else %}
+            <a href="/list-search/add/{{item.list_name_encoded}}" class="btn btn-sm btn-success mt-2">Save List</a>
+            {% endif %}
+
           </div>
-          {% endfor %}
-          
         </div>
+        {% endfor %}
+
       </div>
     </div>
-
-    <br>
-    <hr>
-
-    
-    {% endfor %}
-
-
-    <!-- <div class="row">
-      <div class="col">
-        <h2 class="display-3">Non-Fiction</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist.nonfiction %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </div>
-    </div>
-
-    <br>
-    <hr>
-
-    <div class="row">
-      <div class="col">
-        <h2 class="display-3">Exciting!</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist.exciting %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </div>
-    </div>
-
-    <br>
-    <hr>
-
-    
-    <div class="row">
-      <div class="col">
-        <h2 class="display-3">Business</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist.business %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </div>
-    </div>
-
-    <br>
-    <hr>
-
-
-    <div class="row">
-      <div class="col">
-        <h2 class="display-3">Graphic Novels</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist.graphic %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </div>
-    </div>
-
-    <br>
-    <hr>
-
-    <div class="row">
-      <div class="col">
-        <h2 class="display-3">Childrens</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist.childrens %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </div>
-    </div>
-
-    <br>
-    <hr>
-
-
-    <div class="row">
-      <div class="col">
-        <h2 class="display-3">Other</h2>
-        <div class="d-flex flex-row flex-wrap">
-          
-          {% for item in booklist.other %}
-          <div class="card m-2" style="width: 18rem;">
-            <div class="card-body">
-              <h5 class="card-title">{{ item.display_name }} </h5>
-              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-                  <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
-                  <div>
-                    <input type="date" id="start" name="trip-start" value="{{item.newest_published_date}}"
-                      min="{{item.oldest_published_date}}" max="{{item.newest_published_date}}">
-                  </div>
-                  <a href="/book-results/{{item.list_name_encoded}}" class="btn btn-sm btn-primary mt-2">Go to List!</a>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </div>
-    </div>
-
-    <br>
-    <hr> -->
-
   </div>
 
+  <br>
+  <hr>
 
+
+  {% endfor %}
+
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script src="/static/app.js"></script>
 {% endblock %}

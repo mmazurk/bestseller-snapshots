@@ -67,7 +67,7 @@ class Book(db.Model):
     book_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     isbns_combined = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
-    author = db.Column(db.String(30), nullable=False)
+    author = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(200))
 
