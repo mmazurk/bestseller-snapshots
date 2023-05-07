@@ -163,7 +163,7 @@ However, I ran into a problem when I tried to modify the list-search page so it 
 
 <br>
 
-# Iterations to Be Made
+# Future Iterations
 
 I want to make these improvements before I push this to production and allow users to interact with it.
 
@@ -171,7 +171,7 @@ I want to make these improvements before I push this to production and allow use
 
 * __Use of AJAX on pages":__ The only page that uses JavaScript is the list-search page (as described above). In future iterations I could use AJAX on any of the pages where the user is allowed to "add" or "remove" a book/list to their favorites. 
 
-* __Update of UI and Back End__*: I was limited in this project to using only the tools that I had learned in my course, such as Flask. In future iterations, I may refactor the code to be more maintable by using a different technology. 
+* __Update of UI and Back End__: I was limited in this project to using only the tools that I had learned in my course, such as Flask. In future iterations, I may refactor the code to be more maintable by using a different technology. 
 
-* __Increase Security__*: I have not tested all the possible ways that users could try and break the site by manipulating the URLs or Javascript console, so this needs to be done in the future. 
+* __Increase Security__: I have not tested all the possible ways that users could try and break the site by manipulating the URLs or Javascript console, so this needs to be done in the future. 
 
