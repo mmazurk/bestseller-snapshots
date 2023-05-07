@@ -3,8 +3,7 @@
 {% block title %}User Page{% endblock %}
 
 {% block navbar %}
-<a class="nav-link" href="#">SECRETS</a>
-<a class="nav-link" href="#">SO MANY SECRETS</a>
+<a class="nav-link" href="/logout">Logout</a>
 {% endblock %}
 
 {% block content %}
@@ -18,7 +17,7 @@
         <img
           src="{{ user['image_url'] }}"
           alt="" class="img-fluid rounded-3 user-image">
-        <p class="text-light w-75">"{{ user['bio'] }}."</p>
+        <p class="text-light w-50">"{{ user['bio'] }}."</p>
       </div>
       <div class="col-8 d-flex align-items-center">
       </div>
@@ -35,8 +34,8 @@
 
           {% for item in favorited_lists %}
           <li class="list-group-item">
-            <a href="/list-search/remove?list_name_encoded={{item}}" class="btn btn-sm btn-secondary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .60rem;">Remove List</a>
-            {{ item }} 
+            <a href="/list-search/remove?list_name_encoded={{item[1]}}&origin=landing" class="btn btn-sm btn-secondary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .60rem;">Remove List</a>
+            {{ item[0] }} 
                    
           </li>
           {% endfor %}

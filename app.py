@@ -12,11 +12,6 @@ key = API_KEY
 API_BASE_URL = "https://api.nytimes.com/svc/books/v3/"
 
 app = Flask(__name__)
-# app.app_context().push()
-
-# TODO
-# Need to figure out how to configure app.app_context() correctly
-# So we don't have problems on Heroku
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///bestseller'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -33,13 +28,25 @@ with app.app_context():
 # object to store API call so we don't make it multiple times
 booklist = List()
 
-
 @app.route("/")
 def start_page():
     """redirect a user to the register page"""
 
+    username = session.get('username')
+
+    if(username):
+        session.pop('username')
+        session.pop('user_id')
+
     return render_template("startpage.html")
 
+@app.route("/logout")
+def logout_user():
+    """log a user out and return to the start page"""
+
+    session.pop('user_id')
+    session.pop('username')
+    return redirect('/')
 
 @app.route("/register", methods=['GET', 'POST'])
 def register_user():
@@ -91,34 +98,29 @@ def login_user():
         return render_template("login.html", form=form)
 
 
+@app.route("/user-landing")
+def redirect_to_page():
+    """redirects user to home page"""
+
+    username = session.get('username')
+    return redirect(f"/user-landing/{username}")
+
+
 @app.route("/user-landing/<username>")
 def show_user_page(username):
     """Users home page"""
 
+    if not username == session.get('username'):
+        return redirect("/")
+
     user_id = session.get('user_id')
 
-    # find out which lists the user has favorited
-    # -------------------------
-    # select u.user_id, l.list_name_encoded
-    # from user_lists u
-    # left join lists l
-    # on u.list_id = l.list_id
-    # where user_id = 1; 
-
-    list_result = db.session.query(NYTList.list_name_encoded).join(UserLists, NYTList.list_id == UserLists.list_id, isouter=True).filter(UserLists.user_id == user_id).all()
+    list_result = db.session.query(NYTList.list_name, NYTList.list_name_encoded).join(UserLists, NYTList.list_id == UserLists.list_id, isouter=True).filter(UserLists.user_id == user_id).all()
     
     if (list_result):
-        favorited_lists = [item[0] for item in list_result]
+        favorited_lists = [(item[0], item[1]) for item in list_result]
     else: 
         favorited_lists = []
-
-    # find out which books the user has favorited
-    # -------------------------
-    # select ub.user_id, ub.book_id, b.title, b.author, b.description, b.image_url
-    # from user_books ub
-    # left join books b
-    # on b.book_id = ub.book_id
-    # where user_id = 1;
 
     book_result = db.session.query(Book.title, Book.author, Book.description, Book.image_url, Book.book_id).join(UserBooks, Book.book_id == UserBooks.book_id, isouter = True).filter(UserBooks.user_id == user_id).all()
 
@@ -137,14 +139,6 @@ def search_lists():
     """search through book lists"""
 
     user_id = session.get('user_id')
-
-    # find out which lists the user has favorited
-    # -------------------------
-    # select u.user_id, l.list_name_encoded
-    # from user_lists u
-    # left join lists l
-    # on u.list_id = l.list_id
-    # where user_id = 1; 
 
     result = db.session.query(NYTList.list_name_encoded).join(UserLists, NYTList.list_id == UserLists.list_id, isouter=True).filter(UserLists.user_id == user_id).all()
     
@@ -171,7 +165,19 @@ def show_list():
     published_date = data['results']['published_date']
     books = data['results']['books']
 
-    return render_template("book-results.html", display_name=display_name, list_name_encoded = list_name_encoded, published_date=published_date, books=books)
+    # now see which books the user has already favorited
+
+    user_id = session.get('user_id')
+    book_result = db.session.query(Book.isbns_combined, Book.title, Book.author, Book.description, Book.image_url, Book.book_id).join(UserBooks, Book.book_id == UserBooks.book_id, isouter = True).filter(UserBooks.user_id == user_id).all()
+
+    if(book_result):
+        favorited_books = book_result
+    else: 
+        favorited_books = []
+    
+    favorite_list = [item[0] for item in favorited_books]
+
+    return render_template("book-results.html", display_name=display_name, list_name_encoded = list_name_encoded, published_date=published_date, books=books, favorite_list = favorite_list)
 
 
 @app.route("/list-search/add/<list_name_encoded>")
@@ -224,7 +230,8 @@ def add_book():
     entry = UserBooks(user_id = user_id, book_id = book_id)
     db.session.add(entry)
     db.session.commit()
-    return redirect(f"/book-results/{list_name_encoded}")
+    
+    return redirect(f"/book-results?list_name_encoded={list_name_encoded}")
 
 @app.route("/list-search/remove")
 def remove_list():
@@ -233,12 +240,17 @@ def remove_list():
     username = session.get('username')
     user_id = session.get('user_id')
     list_name_encoded = request.args.get('list_name_encoded')
+    origin = request.args.get('origin')
     
     if(list_name_encoded):
         list_id = NYTList.query.filter(NYTList.list_name_encoded == list_name_encoded).first().list_id
         UserLists.query.filter(UserLists.user_id == user_id).filter(UserLists.list_id == list_id).delete()
         db.session.commit()
-        return redirect(f"/user-landing/{username}")
+
+        if(origin == "landing"):
+            return redirect(f"/user-landing/{username}")
+        if(origin == "lists"):
+            return redirect("/list-search")
     else:
         return render_template("secret.html")
     

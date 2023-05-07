@@ -5,8 +5,7 @@
 {% block body_class %}list-search{% endblock %}
 
 {% block navbar %}
-<a class="nav-link" href="#">SECRETS</a>
-<a class="nav-link" href="#">SO MANY SECRETS</a>
+<a class="nav-link" href="/logout">Logout</a>
 {% endblock %}
 
 {% block content %}
@@ -25,7 +24,6 @@
 
   {% for category in ['fiction', 'nonfiction', 'exciting', 'business', 'graphic', 'childrens', 'other'] %}
 
-
   <div class="row">
     <div class="col">
       <h2 class="display-3">{{category|capitalize}}</h2>
@@ -33,23 +31,33 @@
 
         {% for item in booklist[category] %}
         <div class="card m-2" style="width: 18rem;">
-          <div class="card-body">
-            <h5 class="card-title">{{ item.display_name }} </h5>
-            <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
-            <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
+          <div class="card-body card-align">
+
             <div>
-              <input type="date" id="{{item.list_name_encoded}}_date" name="{{item.list_name_encoded}}_date"
-                value="{{item.newest_published_date}}" min="{{item.oldest_published_date}}"
-                max="{{item.newest_published_date}}">
+
+              <h5 class="card-title">{{ item.display_name }} </h5>
+              <h6 class="card-subtitle mb-4 text-muted">Updated {{item.updated}}</h6>
+
             </div>
-            <a href="/book-results?list_name_encoded={{item.list_name_encoded}}" id="{{item.list_name_encoded}}"
+
+            <div>
+
+              <p class="mb-lg-0 small">Between {{item.oldest_published_date}} and {{item.newest_published_date}}</p>
+              <div>
+                <input type="date" id="{{item.list_name_encoded}}_date" name="{{item.list_name_encoded}}_date"
+                  value="{{item.newest_published_date}}" min="{{item.oldest_published_date}}"
+                  max="{{item.newest_published_date}}">
+              </div>
+              <a href="/book-results?list_name_encoded={{item.list_name_encoded}}" id="{{item.list_name_encoded}}"
                 class=" btn btn-sm btn-primary mt-2">Go to List!</a>
-            {% if item.list_name_encoded in list_of_favorites %}
-            <a href="/list-search/remove/{{item.list_name_encoded}}" class="btn btn-sm btn-danger mt-2">Remove
-              List</a>
-            {% else %}
-            <a href="/list-search/add/{{item.list_name_encoded}}" class="btn btn-sm btn-success mt-2">Save List</a>
-            {% endif %}
+              {% if item.list_name_encoded in list_of_favorites %}
+              <a href="/list-search/remove?list_name_encoded={{item.list_name_encoded}}&origin=lists" class="btn btn-sm btn-danger mt-2">Remove
+                List</a>
+              {% else %}
+              <a href="/list-search/add/{{item.list_name_encoded}}" class="btn btn-sm btn-success mt-2">Save List</a>
+              {% endif %}
+
+            </div>
 
           </div>
         </div>
