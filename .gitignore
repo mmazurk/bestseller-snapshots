@@ -2,5 +2,6 @@ lists-names.json
 books-product.yaml
 venv/
 api_secret.py
+__pycache__/
 
 

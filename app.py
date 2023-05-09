@@ -2,13 +2,14 @@ from flask import Flask, session, redirect, render_template, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, NYTList, Book, UserBooks, UserLists
 from forms import RegisterForm, LoginForm
-from api_secret import API_KEY
+# from api_secret import API_KEY
 from booklist import List
 import requests
 import pdb
 import json
+import os
 
-key = API_KEY
+key = os.getenv("NYT_API_KEY")
 API_BASE_URL = "https://api.nytimes.com/svc/books/v3/"
 
 app = Flask(__name__)
