@@ -113,7 +113,7 @@ To solve the first problem, I just saved all the relevant information about book
 
 ## **CHALLENGE #3** -- Using GET requests for all Python routes
 
-To keep the pages simple and limit the scope of the project, I tried to limit use of AJAX and do most of the work GET requests to Python routes with embedded query parameters. I wasn't sure the best method to pass data between pages, but since the NYT bestseller lists are all public information, I chose to use GET requestsy:
+To keep the pages simple and limit the scope of the project, I tried to limit use of AJAX and do most of the work GET requests to Python routes with embedded query parameters. I wasn't sure the best method to pass data between pages, but since the NYT bestseller lists are all public information, I chose to use GET requests:
 
 Anchor tag with query embedded: 
 
@@ -169,7 +169,7 @@ I want to make these improvements before I push this to production and allow use
 
 * __Improve the "My Saved Lists":__ Currently, the 'My Saved Lists' on the landing page is just a reminder to the user of the lists that they have liked in the past, and it doesn't include any information about the date ranges the user may have searched or liked. 
 
-* __Use of AJAX on pages":__ The only page that uses JavaScript is the list-search page (as described above). In future iterations I could use AJAX on any of the pages where the user is allowed to "add" or "remove" a book/list to their favorites. 
+* __Use of AJAX on pages:__ The only page that uses JavaScript is the list-search page (as described above). In future iterations I could use AJAX on any of the pages where the user is allowed to "add" or "remove" a book/list to their favorites. 
 
 * __Update of UI and Back End__: I was limited in this project to using only the tools that I had learned in my course, such as Flask. In future iterations, I may refactor the code to be more maintable by using a different technology. 
 
