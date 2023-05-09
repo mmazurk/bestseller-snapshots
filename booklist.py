@@ -1,8 +1,8 @@
-
+import os
 import requests
-from api_secret import API_KEY
+# from api_secret import API_KEY
 
-key = API_KEY
+key = os.getenv("NYT_API_KEY")
 API_BASE_URL = "https://api.nytimes.com/svc/books/v3/"
 
 fiction_list = [
