@@ -49,27 +49,32 @@ class User(db.Model):
         u = self
         return f"<User id={u.user_id}, username={u.username}"
 
+
 class NYTList(db.Model):
 
     __tablename__ = "lists"
 
     # in the API this is also called list_id
     list_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    list_name = db.Column(db.String(200), nullable = False)
+    list_name = db.Column(db.String(200), nullable=False)
     list_name_encoded = db.Column(db.String(200), nullable=False)
     oldest_published_date = db.Column(db.Date)
     newest_published_date = db.Column(db.Date)
+
 
 class Book(db.Model):
 
     __tablename__ = "books"
 
+    # The character lengths don't match your PSQL database
+    # You need to fix this
     book_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     isbns_combined = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(200))
+
 
 class UserBooks(db.Model):
 
@@ -79,6 +84,7 @@ class UserBooks(db.Model):
     text = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     book_id = db.Column(db.Integer, db.ForeignKey('books.book_id'))
+
 
 class UserLists(db.Model):
 

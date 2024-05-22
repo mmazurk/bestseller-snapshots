@@ -3,5 +3,4 @@ books-product.yaml
 venv/
 api_secret.py
 __pycache__/
-
-
+*.env
