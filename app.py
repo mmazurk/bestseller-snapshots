@@ -2,7 +2,6 @@ from flask import Flask, session, redirect, render_template, flash, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, NYTList, Book, UserBooks, UserLists
 from forms import RegisterForm, LoginForm
-# from api_secret import API_KEY
 from booklist import List
 import requests
 import os
